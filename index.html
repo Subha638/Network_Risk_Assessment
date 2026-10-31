@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Network Risk Assessment</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#f4f7fb;color:#172033}
+button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#0f172a,#1d4ed8);padding:20px}
+.box{width:420px;background:white;padding:34px;border-radius:20px;box-shadow:0 25px 80px #0005}.shield{font-size:34px}.box h1{margin:7px 0;font-size:25px}.muted{color:#718096;font-size:13px}
+.tabs{display:flex;gap:8px;margin:22px 0}.tabs button{flex:1;padding:11px;border:1px solid #dbe2ea;border-radius:9px;background:#f8fafc}.tabs .active{background:#2563eb;color:#fff}
+label{font-size:12px;font-weight:700}input{width:100%;padding:12px;margin:7px 0 15px;border:1px solid #d5dce5;border-radius:9px}
+.primary{width:100%;padding:12px;border:0;border-radius:9px;background:#2563eb;color:#fff;font-weight:700}.demo{margin-top:13px;background:#eff6ff;padding:11px;border-radius:9px;font-size:12px}
+header{height:68px;background:#111827;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 26px}.brand{font-weight:800}.brand small{display:block;color:#aeb8c8;font-weight:400}
+.logout{background:transparent;border:1px solid #526074;color:white;padding:8px 12px;border-radius:8px}.layout{display:flex;min-height:calc(100vh - 68px)}
+aside{width:230px;background:#fff;border-right:1px solid #e5eaf0;padding:20px 13px}.nav{padding:12px;color:#637084;border-radius:9px;margin:4px 0;cursor:pointer;transition:.15s}.nav:hover{background:#f1f5f9;color:#2563eb}.nav.active{background:#eaf1ff;color:#2563eb;font-weight:700}
+main{flex:1;padding:28px;max-width:1600px;min-width:0}.title{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.title h2{margin:0 0 5px}
+.badge{padding:7px 10px;border-radius:20px;background:#dcfce7;color:#15803d;font-size:12px;font-weight:700}.badge.off{background:#fee2e2;color:#b91c1c}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}.card,.section{background:#fff;border:1px solid #e5eaf0;border-radius:14px;padding:18px;box-shadow:0 3px 12px #17203308}.card .label{font-size:11px;color:#718096}.num{font-size:27px;font-weight:800;margin-top:7px}
+.section{margin-top:18px}.section h3{margin:0 0 14px;font-size:16px}.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.step{padding:15px;background:#ecfdf5;color:#047857;border-radius:10px;text-align:center;font-weight:700;font-size:13px}
+.cols{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.risk{display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px solid #edf0f4;border-radius:9px;margin:8px 0}.status{padding:5px 8px;border-radius:14px;font-size:10px;font-weight:800;white-space:nowrap}.blocked{background:#fee2e2;color:#b91c1c}.allowed{background:#dcfce7;color:#15803d}.failed{background:#fee2e2;color:#b91c1c}.not-tested{background:#f1f5f9;color:#64748b}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px}.control{padding:14px;border:1px solid #e8edf2;border-radius:9px;display:flex;justify-content:space-between;gap:12px;align-items:center}.control b{font-size:12px}.control p{margin:4px 0 0;font-size:11px;color:#718096}.switch{border:0;border-radius:18px;padding:6px 10px;font-size:11px;font-weight:700}.switch.on{background:#dcfce7;color:#15803d}.switch.off{background:#fee2e2;color:#b91c1c}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:10px;border-bottom:1px solid #edf0f4}th{font-size:10px;color:#64748b}tbody tr:hover{background:#f8fafc}
+.targets{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.target{background:#fff;border:2px solid #e3e8ef;border-radius:12px;padding:17px;text-align:left}.target:hover{border-color:#2563eb}.target h3{font-size:14px}.target p{font-size:11px;color:#718096}
+.result{padding:14px;border-radius:10px;margin-top:15px}.success{background:#ecfdf5;color:#047857}.danger{background:#fff1f2;color:#be123c}.info{background:#eff6ff;color:#1d4ed8}
+.toolbar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:10px}.secondary{padding:9px 12px;border:1px solid #d8e0e9;background:#fff;border-radius:8px}.primarySmall{padding:9px 12px;border:0;background:#2563eb;color:#fff;border-radius:8px}
+pre{background:#0f172a;color:#dbeafe;padding:14px;border-radius:9px;overflow:auto;font-size:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.metricLine{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #edf0f4}.callout{padding:14px;border-radius:10px;background:#eff6ff;color:#1e40af}.small{font-size:11px}.search{padding:9px 11px;border:1px solid #d8e0e9;border-radius:8px;width:220px}
+@media(max-width:1200px){.cards{grid-template-columns:repeat(3,1fr)}.targets{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.cols,.grid2{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.flow{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){aside{display:none}.cards{grid-template-columns:repeat(2,1fr)}.targets{grid-template-columns:1fr 1fr}main{padding:16px}}
+</style>
+</head>
+<body>
+
+<div id="login" class="login">
+  <div class="box">
+    <div class="shield">🛡️</div>
+    <h1>AI Network Risk Assessment</h1>
+    <p class="muted">Vulnerability Management & Security Monitoring</p>
+    <div class="tabs">
+      <button id="gTab" class="active" onclick="selectRole('guest')">Guest</button>
+      <button id="aTab" onclick="selectRole('admin')">Admin</button>
+    </div>
+    <label>Username</label><input id="user" value="guest">
+    <label>Password</label><input id="pass" type="password" value="guest123">
+    <button class="primary" onclick="login()">Sign In</button>
+    <div class="demo" id="demo">Guest demo: <b>guest / guest123</b></div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+<header>
+  <div class="brand">🛡️ AI Network Risk Assessment <small>Identify → Apply Controls → Test → Verify</small></div>
+  <button class="logout" onclick="logout()">Logout</button>
+</header>
+<div class="layout">
+<aside>
+  <div class="nav active" data-page="dashboard">▦ Dashboard</div>
+  <div class="nav" data-page="risk">⚠ Risk Assessment</div>
+  <div class="nav" data-page="controls">🔐 Controls</div>
+  <div class="nav" data-page="testing">🧪 Testing</div>
+  <div class="nav" data-page="verification">✓ Verification</div>
+  <div class="nav" data-page="activity">☷ Activity Logs</div>
+</aside>
+
+<main>
+
+<!-- DASHBOARD -->
+<section id="page-dashboard" class="page">
+  <div id="guestDashboard">
+    <div class="title"><div><h2>Guest Security Test</h2><div class="muted">Source: Guest-PC • 192.168.50.10 • VLAN 50</div></div><span class="badge">Guest Online</span></div>
+    <div class="section"><h3>Attempt Resource Access</h3><p class="muted">These buttons simulate the same policy tests represented in Cisco Packet Tracer.</p>
+      <div class="targets">
+        <button class="target" onclick="testGuest('Finance')"><h3>💳 Finance</h3><p>192.168.20.10</p></button>
+        <button class="target" onclick="testGuest('Server')"><h3>🖥 Server</h3><p>192.168.40.10</p></button>
+        <button class="target" onclick="testGuest('HR')"><h3>👥 HR</h3><p>192.168.10.10</p></button>
+        <button class="target" onclick="testGuest('IT')"><h3>💻 IT</h3><p>192.168.30.10</p></button>
+        <button class="target" onclick="testGuest('Guest Gateway')"><h3>🌐 Gateway</h3><p>192.168.50.1</p></button>
+      </div>
+      <div id="guestResult"></div>
+    </div>
+  </div>
+
+  <div id="adminDashboard" class="hidden">
+    <div class="title"><div><h2>Admin Security Operations Center</h2><div class="muted">Network risk assessment dashboard</div></div><span id="monitorBadge" class="badge">● Monitoring</span></div>
+    <div class="cards">
+      <div class="card"><div class="label">TOTAL EVENTS</div><div id="total" class="num">0</div></div>
+      <div class="card"><div class="label">BLOCKED</div><div id="blocked" class="num">0</div></div>
+      <div class="card"><div class="label">HIGH RISK</div><div id="high" class="num">0</div></div>
+      <div class="card"><div class="label">ALLOWED</div><div id="allowed" class="num">0</div></div>
+      <div class="card"><div class="label">CONTROLS</div><div id="controlCount" class="num">4</div></div>
+      <div class="card"><div class="label">VLANs</div><div class="num">5</div></div>
+    </div>
+    <div class="section"><h3>Security Workflow</h3><div class="flow"><div class="step">1. Identify Risks</div><div class="step">2. Apply Controls</div><div class="step">3. Test</div><div class="step">4. Verify</div></div></div>
+    <div class="cols">
+      <div class="section"><h3>Risk Status</h3>
+        <div class="risk"><span><b>Guest → Finance</b><br><span class="muted">VLAN 50 → VLAN 20</span></span><span class="status blocked">ACL BLOCKED</span></div>
+        <div class="risk"><span><b>Guest → Server</b><br><span class="muted">VLAN 50 → VLAN 40</span></span><span class="status blocked">ACL BLOCKED</span></div>
+        <div class="risk"><span><b>Guest → Gateway</b><br><span class="muted">VLAN 50 → VLAN 50</span></span><span class="status allowed">ALLOWED</span></div>
+      </div>
+      <div class="section"><h3>VLANs</h3><div id="dashboardVlans"></div></div>
+    </div>
+    <div class="section"><h3>Packet Tracer Bridge</h3><div id="bridgeBox" class="callout">Checking bridge endpoint...</div></div>
+  </div>
+</section>
+
+<!-- RISK -->
+<section id="page-risk" class="page hidden">
+  <div class="title"><div><h2>Risk Assessment</h2><div class="muted">Identify network communication risks from VLAN and activity data.</div></div></div>
+  <div class="cards">
+    <div class="card"><div class="label">HIGH RISK EVENTS</div><div id="riskHigh" class="num">0</div></div>
+    <div class="card"><div class="label">MEDIUM RISK EVENTS</div><div id="riskMedium" class="num">0</div></div>
+    <div class="card"><div class="label">LOW RISK EVENTS</div><div id="riskLow" class="num">0</div></div>
+  </div>
+  <div class="section"><h3>VLAN Risk Surface</h3><div id="riskVlans"></div></div>
+  <div class="section"><h3>Observed Target Risk</h3><div id="riskTable"></div></div>
+</section>
+
+<!-- CONTROLS -->
+<section id="page-controls" class="page hidden">
+  <div class="title"><div><h2>Security Controls</h2><div class="muted">Review and toggle the controls represented by the demonstration network.</div></div></div>
+  <div class="section"><div id="controlsList" class="controls"></div></div>
+  <div class="section"><h3>Control Mapping</h3><table><thead><tr><th>Control</th><th>Purpose</th><th>Project Evidence</th></tr></thead><tbody>
+    <tr><td>ACL</td><td>Restrict inter-VLAN traffic</td><td>Guest → Finance/Server blocked</td></tr>
+    <tr><td>Port Security</td><td>Limit unauthorized devices</td><td>Sticky MAC on protected ports</td></tr>
+    <tr><td>SSH</td><td>Secure device administration</td><td>SSH management policy</td></tr>
+    <tr><td>Unused Ports</td><td>Reduce exposed switch interfaces</td><td>Unused access ports shutdown</td></tr>
+  </tbody></table></div>
+</section>
+
+<!-- TESTING -->
+<section id="page-testing" class="page hidden">
+  <div class="title"><div><h2>Network Testing</h2><div class="muted">Use Cisco Packet Tracer for the actual network simulation and the bridge for automatic result import.</div></div><span id="testingBridgeBadge" class="badge">Bridge endpoint ready</span></div>
+  <div class="section"><h3>Packet Tracer Workflow</h3><div class="flow"><div class="step">Open Packet Tracer</div><div class="step">Run ping</div><div class="step">Bridge detects result</div><div class="step">Dashboard updates</div></div></div>
+  <div class="grid2">
+    <div class="section"><h3>Recommended Tests</h3>
+      <div class="metricLine"><span>Guest → Finance</span><b>Expected: BLOCKED</b></div>
+      <div class="metricLine"><span>Guest → Server</span><b>Expected: BLOCKED</b></div>
+      <div class="metricLine"><span>Guest → Gateway</span><b>Expected: ALLOWED</b></div>
+      <div class="metricLine"><span>HR → Finance</span><b>Expected: ALLOWED</b></div>
+    </div>
+    <div class="section"><h3>Windows Bridge</h3>
+      <p class="muted">Keep <code>packet_tracer_bridge.py</code> running in your project virtual environment.</p>
+      <pre>python packet_tracer_bridge.py</pre>
+      <div id="testingBridgeInfo" class="callout">The bridge uses OCR to detect the Packet Tracer CLI result and posts it to /api/packet-tracer/event.</div>
+    </div>
+  </div>
+  <div class="section"><h3>Quick Browser Policy Test</h3><p class="muted">This is a dashboard-side demonstration test. It does not replace the real Packet Tracer test.</p>
+    <div class="targets">
+      <button class="target" onclick="testGuest('Finance')"><h3>Guest → Finance</h3><p>Expected BLOCKED</p></button>
+      <button class="target" onclick="testGuest('Server')"><h3>Guest → Server</h3><p>Expected BLOCKED</p></button>
+      <button class="target" onclick="testGuest('HR')"><h3>Guest → HR</h3><p>Expected ALLOWED</p></button>
+      <button class="target" onclick="testGuest('IT')"><h3>Guest → IT</h3><p>Expected ALLOWED</p></button>
+      <button class="target" onclick="testGuest('Guest Gateway')"><h3>Guest → Gateway</h3><p>Expected ALLOWED</p></button>
+    </div>
+    <div id="testingResult"></div>
+  </div>
+</section>
+
+<!-- VERIFICATION -->
+<section id="page-verification" class="page hidden">
+  <div class="title"><div><h2>Verification</h2><div class="muted">Compare expected security policy with the latest observed test.</div></div><button class="secondary" onclick="loadVerification()">↻ Verify Again</button></div>
+  <div class="section"><div id="verificationTable"></div></div>
+</section>
+
+<!-- ACTIVITY -->
+<section id="page-activity" class="page hidden">
+  <div class="title"><div><h2>Activity Logs</h2><div class="muted">All events received from browser tests and the Packet Tracer bridge.</div></div></div>
+  <div class="section">
+    <div class="toolbar"><input id="logSearch" class="search" placeholder="Search source, target, status..." oninput="renderActivity()"><button class="secondary" onclick="loadActivity()">↻ Refresh</button><button class="secondary" onclick="resetEvents()">Clear Events</button></div>
+    <div id="activityTable"></div>
+  </div>
+</section>
+
+</main></div></div>
+
+<script>
+let role = 'guest';
+let currentPage = 'dashboard';
+let activityCache = [];
+
+function $(id){ return document.getElementById(id); }
+
+function selectRole(r){
+  role = r;
+  $('gTab').classList.toggle('active', r === 'guest');
+  $('aTab').classList.toggle('active', r === 'admin');
+  $('user').value = r;
+  $('pass').value = r === 'guest' ? 'guest123' : 'admin123';
+  $('demo').innerHTML = r === 'guest' ? 'Guest demo: <b>guest / guest123</b>' : 'Admin demo: <b>admin / admin123</b>';
+}
+
+async function login(){
+  const r = await fetch('/api/login', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:$('user').value, password:$('pass').value})
+  });
+  const d = await r.json();
+  if(!r.ok){ alert(d.error || 'Login failed'); return; }
+  role = d.role;
+  $('login').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  setupRoleView();
+}
+
+function setupRoleView(){
+  $('guestDashboard').classList.toggle('hidden', role !== 'guest');
+  $('adminDashboard').classList.toggle('hidden', role !== 'admin');
+
+  // Guest can see only Dashboard. Admin can see all six sections.
+  document.querySelectorAll('aside .nav').forEach(item => {
+    const isDashboard = item.dataset.page === 'dashboard';
+    item.classList.toggle('hidden', role !== 'admin' && !isDashboard);
+  });
+
+  // Always start on Dashboard after login.
+  showPage('dashboard');
+
+  if(role === 'admin') loadAdmin();
+}
+
+async function logout(){
+  await fetch('/api/logout',{method:'POST'});
+  location.reload();
+}
+
+function showPage(page){
+  if(role !== 'admin' && page !== 'dashboard'){
+    alert('Please sign in as Admin to open this section.');
+    return;
+  }
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
+  $('page-' + page).classList.remove('hidden');
+  document.querySelectorAll('.nav').forEach(x => x.classList.toggle('active', x.dataset.page === page));
+
+  if(page === 'dashboard' && role === 'admin') loadAdmin();
+  if(page === 'risk') loadRisk();
+  if(page === 'controls') loadControls();
+  if(page === 'testing') loadBridgeStatus();
+  if(page === 'verification') loadVerification();
+  if(page === 'activity') loadActivity();
+}
+
+document.querySelectorAll('.nav').forEach(n => n.addEventListener('click', () => showPage(n.dataset.page)));
+
+async function testGuest(target){
+  const endpoint = role === 'admin' ? '/api/policy-test' : '/api/guest/test';
+  const r = await fetch(endpoint,{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({target})
+  });
+  const d = await r.json();
+  if(!r.ok){ alert(d.error || 'Test failed'); return; }
+  const html = `<div class="result ${d.status === 'BLOCKED' ? 'success' : 'info'}"><b>${d.status}</b> • Risk: <b>${d.risk}</b><br>${d.reason}</div>`;
+  if($('guestResult')) $('guestResult').innerHTML = html;
+  if($('testingResult')) $('testingResult').innerHTML = html;
+  if(role === 'admin') loadAdmin();
+}
+
+async function loadAdmin(){
+  const r = await fetch('/api/dashboard');
+  const d = await r.json();
+  if(!r.ok){ return; }
+  $('total').textContent = d.total;
+  $('blocked').textContent = d.blocked;
+  $('high').textContent = d.high;
+  $('allowed').textContent = d.allowed;
+  $('controlCount').textContent = d.controls.length;
+  $('dashboardVlans').innerHTML = vlanTable(d.vlans);
+  activityCache = d.events;
+  await loadBridgeStatus();
+}
+
+function vlanTable(vlans){
+  return `<table><thead><tr><th>VLAN</th><th>Name</th><th>Network</th><th>Gateway</th></tr></thead><tbody>`+
+    vlans.map(v=>`<tr><td>${v.vlan}</td><td>${v.name}</td><td>${v.network}</td><td>${v.gateway}</td></tr>`).join('')+
+    `</tbody></table>`;
+}
+
+async function loadRisk(){
+  const r = await fetch('/api/risk-assessment');
+  const d = await r.json();
+  if(!r.ok){ return; }
+  const high = d.events.filter(e=>e.risk === 'HIGH').length;
+  const medium = d.events.filter(e=>e.risk === 'MEDIUM').length;
+  const low = d.events.filter(e=>e.risk === 'LOW').length;
+  $('riskHigh').textContent = high;
+  $('riskMedium').textContent = medium;
+  $('riskLow').textContent = low;
+  $('riskVlans').innerHTML = vlanTable(d.vlans);
+  $('riskTable').innerHTML = d.risks.length ? `<table><thead><tr><th>Target</th><th>IP</th><th>Attempts</th><th>Blocked</th><th>Allowed</th><th>Latest Risk</th></tr></thead><tbody>`+
+    d.risks.map(x=>`<tr><td>${x.target}</td><td>${x.target_ip}</td><td>${x.attempts}</td><td>${x.blocked || 0}</td><td>${x.allowed || 0}</td><td>${x.latest_risk || '-'}</td></tr>`).join('')+
+    `</tbody></table>` : '<div class="callout">No activity events yet. Run a test first.</div>';
+}
+
+async function loadControls(){
+  const r = await fetch('/api/controls');
+  const d = await r.json();
+  if(!r.ok){ return; }
+  $('controlsList').innerHTML = d.controls.map(c=>`<div class="control"><div><b>${c.name}</b><p>${c.description}</p></div><button class="switch ${c.enabled ? 'on':'off'}" onclick="toggleControl(${c.id})">${c.enabled ? 'ENABLED':'DISABLED'}</button></div>`).join('');
+}
+
+async function toggleControl(id){
+  const r = await fetch(`/api/controls/${id}/toggle`,{method:'POST'});
+  const d = await r.json();
+  if(!r.ok){ alert(d.error || 'Unable to change control'); return; }
+  loadControls();
+}
+
+async function loadBridgeStatus(){
+  const r = await fetch('/api/bridge-status');
+  const d = await r.json();
+  if(!r.ok) return;
+  if($('bridgeBox')) $('bridgeBox').innerHTML = `<b>Backend endpoint ready.</b><br><span class="small">${d.note}</span><pre>POST ${d.endpoint}</pre>`;
+  if($('testingBridgeInfo')) $('testingBridgeInfo').innerHTML = `<b>Bridge endpoint ready.</b><br><span class="small">${d.note}</span>`;
+}
+
+async function loadVerification(){
+  const r = await fetch('/api/verification');
+  const d = await r.json();
+  if(!r.ok){ return; }
+  $('verificationTable').innerHTML = `<table><thead><tr><th>Source VLAN</th><th>Test</th><th>Target VLAN</th><th>Expected</th><th>Actual</th><th>Verification</th></tr></thead><tbody>`+
+    d.results.map(x=>`<tr><td>${x.source_vlan}</td><td>${x.target}</td><td>${x.target_vlan}</td><td><span class="status ${statusClass(x.expected)}">${x.expected}</span></td><td><span class="status ${statusClass(x.actual)}">${x.actual}</span></td><td>${x.verified ? '✅ Verified' : (x.actual === 'NOT TESTED' ? '⏳ Not tested' : '❌ Mismatch')}</td></tr>`).join('')+
+    `</tbody></table>`;
+}
+
+async function loadActivity(){
+  const r = await fetch('/api/activity');
+  const d = await r.json();
+  if(!r.ok) return;
+  activityCache = d.events;
+  renderActivity();
+}
+
+function renderActivity(){
+  const q = ($('logSearch')?.value || '').toLowerCase().trim();
+  const rows = activityCache.filter(e => !q || Object.values(e).join(' ').toLowerCase().includes(q));
+  $('activityTable').innerHTML = rows.length ? `<table><thead><tr><th>Time</th><th>Source</th><th>VLAN</th><th>Target</th><th>IP</th><th>Protocol</th><th>Risk</th><th>Status</th><th>Control</th><th>Reason</th></tr></thead><tbody>`+
+    rows.map(e=>`<tr><td>${e.created}</td><td>${e.source}</td><td>${e.source_vlan || '-'}</td><td>${e.target}</td><td>${e.target_ip}</td><td>${e.protocol || '-'}</td><td>${e.risk}</td><td><span class="status ${statusClass(e.status)}">${e.status}</span></td><td>${e.control || '-'}</td><td>${e.reason || '-'}</td></tr>`).join('')+
+    `</tbody></table>` : '<div class="callout">No matching activity events.</div>';
+}
+
+function statusClass(status){
+  if(status === 'BLOCKED') return 'blocked';
+  if(status === 'ALLOWED') return 'allowed';
+  if(status === 'FAILED') return 'failed';
+  return 'not-tested';
+}
+
+async function resetEvents(){
+  if(!confirm('Clear all activity events?')) return;
+  const r = await fetch('/api/reset',{method:'POST'});
+  const d = await r.json();
+  if(!r.ok){ alert(d.error || 'Unable to clear events'); return; }
+  activityCache = [];
+  if(currentPage === 'activity') renderActivity();
+  loadAdmin();
+}
+
+// Automatically refresh admin information while the dashboard is open.
+setInterval(() => {
+  if(role === 'admin' && currentPage === 'dashboard') loadAdmin();
+  if(role === 'admin' && currentPage === 'activity') loadActivity();
+}, 3000);
+</script>
+</body>
+</html>
